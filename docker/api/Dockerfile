@@ -1,0 +1,16 @@
+FROM golang:1.15.2-alpine
+
+WORKDIR /go/src/app
+
+ENV GO111MODULE=on
+
+RUN apk add --no-cache \
+        alpine-sdk \
+        git \
+    && go get github.com/pilu/fresh
+
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+
+CMD ["fresh"]
