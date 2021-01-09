@@ -6,12 +6,13 @@ services:
       dockerfile: ./docker/api/Dockerfile
     volumes:
       - ./:/go/src/app
+    env_file:
+      - .env
+    tty: true
     ports:
       - "3000:3000"
     links:
       - db
-    env_file:
-      - .env
 
   db:
     image: mysql:8.0
@@ -21,7 +22,7 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: password
       TZ: 'Asia/Tokyo'
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    command: --default-authentication-plugin=mysql_native_password
     volumes:
       - db-data:/var/lib/mysql
     ports:

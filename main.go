@@ -1,6 +1,7 @@
 package main
 
 import (
+	"app/database"
 	"log"
 	"net/http"
 	"os"
@@ -35,6 +36,7 @@ type User struct {
 }
 
 func main() {
+	database.GormConnect()
 	port := os.Getenv("PORT")
 	r := gin.New()
 	r.Use(gin.Logger())
