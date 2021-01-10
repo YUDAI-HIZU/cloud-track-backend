@@ -8,14 +8,31 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-func GormConnect() {
-	db, err := gorm.Open("mysql", config.DatabaseURL)
+var (
+	db  *gorm.DB
+	err error
+)
+
+func Init() {
+	db, err = gorm.Open("mysql", config.DatabaseURL)
 	db.AutoMigrate(&model.User{})
 
 	if err != nil {
 		panic(err.Error())
 	}
+	autoMigration()
+}
 
-	defer db.Close()
-	db.LogMode(true)
+func GetDB() *gorm.DB {
+	return db
+}
+
+func Close() {
+	if err := db.Close(); err != nil {
+		panic(err)
+	}
+}
+
+func autoMigration() {
+	db.AutoMigrate(&model.User{})
 }
