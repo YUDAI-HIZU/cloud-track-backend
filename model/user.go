@@ -1,10 +1,24 @@
 package model
 
-import "github.com/jinzhu/gorm"
+import (
+	"fmt"
+
+	"github.com/jinzhu/gorm"
+	"golang.org/x/crypto/bcrypt"
+)
 
 type User struct {
 	gorm.Model
-	Name     string `gorm:"size:255;not null"`
-	Email    string `gorm:"type:varchar(100);unique_index;not null"`
-	Password string `gorm:"size:255;not null"`
+	Name     string `binding:"required"`
+	Email    string `gorm:"unique_index" binding:"required,email"`
+	Password string `binding:"required,min=8"`
+}
+
+func (user *User) SetPassword(password string) error {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("failed to set password: %w", err)
+	}
+	user.Password = string(hash)
+	return nil
 }

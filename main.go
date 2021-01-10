@@ -1,6 +1,7 @@
 package main
 
 import (
+	"app/controller"
 	"app/database"
 	"log"
 	"net/http"
@@ -36,7 +37,7 @@ type User struct {
 }
 
 func main() {
-	database.GormConnect()
+	database.Init()
 	port := os.Getenv("PORT")
 	r := gin.New()
 	r.Use(gin.Logger())
@@ -130,6 +131,7 @@ func main() {
 	}
 
 	r.POST("/login", authMiddleware.LoginHandler)
+	r.POST("/sign-up", controller.SignUp)
 
 	r.NoRoute(authMiddleware.MiddlewareFunc(), func(c *gin.Context) {
 		claims := jwt.ExtractClaims(c)
@@ -148,4 +150,5 @@ func main() {
 	if err := http.ListenAndServe(":"+port, r); err != nil {
 		log.Fatal(err)
 	}
+	database.Close()
 }
