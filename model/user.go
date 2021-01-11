@@ -14,6 +14,11 @@ type User struct {
 	Password string `binding:"required,min=8"`
 }
 
+type UserInfo struct {
+	Email    string `binding:"required,email"`
+	Password string `binding:"required,min=8"`
+}
+
 func (user *User) SetPassword(password string) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
@@ -21,4 +26,8 @@ func (user *User) SetPassword(password string) error {
 	}
 	user.Password = string(hash)
 	return nil
+}
+
+func (user *User) PasswordVerify(hash, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 }
