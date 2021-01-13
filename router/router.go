@@ -2,6 +2,7 @@ package router
 
 import (
 	"app/controller"
+	"app/middleware"
 	"log"
 	"net/http"
 	"os"
@@ -18,10 +19,11 @@ func Init() {
 	if port == "" {
 		port = "3000"
 	}
-
+	authMiddleware, _ := middleware.AuthMiddleware()
 	r.POST("/sign-up", controller.SignUp)
-	r.POST("/sign-in", controller.SignIn)
-	g := r.Group("/")
+	r.POST("/sign-in", authMiddleware.LoginHandler, controller.SignIn)
+	r.GET("/refresh_token", authMiddleware.RefreshHandler)
+	g := r.Group("/", authMiddleware.MiddlewareFunc())
 	{
 		g.GET("/auth", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"success": "auth ok"})
