@@ -4,8 +4,12 @@ import (
 	"os"
 )
 
-var DatabaseURL string
+var (
+	DatabaseURL string
+	JwtSecret   string
+)
 
 func init() {
 	DatabaseURL = os.Getenv("DATABASE_URL")
+	JwtSecret = os.Getenv("JWT_SECRET")
 }

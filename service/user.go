@@ -24,10 +24,18 @@ func (UserService) Create(user *model.User) error {
 }
 
 func (UserService) GetByEmail(email string) (*model.User, error) {
-	fmt.Print("======", email)
 	var user model.User
 	db := database.GetDB()
 	if err := db.Where("email = ?", email).First(&user).Error; gorm.IsRecordNotFoundError(err) {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (UserService) GetByID(id string) (*model.User, error) {
+	var user model.User
+	db := database.GetDB()
+	if err := db.Where("id = ?", id).First(&user).Error; gorm.IsRecordNotFoundError(err) {
 		return nil, err
 	}
 	return &user, nil
