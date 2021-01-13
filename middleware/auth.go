@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"app/config"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -16,7 +15,6 @@ func AuthMiddleware() gin.HandlerFunc {
 		token, err := request.ParseFromRequest(c.Request, request.OAuth2Extractor, func(token *jwt.Token) (interface{}, error) {
 			return []byte(config.JwtSecret), nil
 		})
-		fmt.Print(token, err)
 		if err != nil {
 			log.Print("failed to parse jwt token", err.Error())
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "認証に失敗しました", "error": err.Error()})
