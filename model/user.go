@@ -1,8 +1,11 @@
 package model
 
 import (
+	"app/config"
 	"fmt"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -26,6 +29,16 @@ func (user *User) SetPassword(password string) error {
 	}
 	user.Password = string(hash)
 	return nil
+}
+
+func (user *User) GenerateToken() (string, error) {
+	claims := &jwt.MapClaims{
+		"exp":    time.Now().Add(24 * 7 * time.Hour).Unix(),
+		"userID": user.ID,
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(config.JwtSecret))
+	return tokenString, err
 }
 
 func (user *User) PasswordVerify(hash, password string) error {

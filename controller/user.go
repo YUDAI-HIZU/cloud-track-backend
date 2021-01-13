@@ -46,8 +46,10 @@ func SignIn(c *gin.Context) {
 		log.Print(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "パスワードが違います", "error": err.Error()})
 	}
+	token, _ := user.GenerateToken()
 	c.JSON(http.StatusCreated, gin.H{
 		"status": "OK",
 		"data":   user,
+		"token":  token,
 	})
 }
