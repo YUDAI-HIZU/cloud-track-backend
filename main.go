@@ -1,12 +1,7 @@
 package main
 
-import (
-	"app/database"
-	"app/router"
-)
+import "app/infrastructure/router"
 
 func main() {
-	database.Init()
-	router.Init()
-	database.Close()
+	router.Router.Run()
 }
