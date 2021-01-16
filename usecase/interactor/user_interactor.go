@@ -16,3 +16,11 @@ func (u *UserInteractor) GetByID(id int) (*domain.User, error) {
 	}
 	return user, nil
 }
+
+func (u *UserInteractor) Create(user *domain.User) error {
+	err := u.UserRepository.Create(user)
+	if err != nil {
+		return err
+	}
+	return nil
+}

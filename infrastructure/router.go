@@ -2,7 +2,6 @@ package infrastructure
 
 import (
 	"app/interfaces/controllers"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -28,9 +27,11 @@ func NewRouter(db *gorm.DB) *Router {
 
 func (r *Router) setRouter() {
 	userController := controllers.NewUserController(r.DB)
-	fmt.Println(userController)
 	r.Gin.GET("/users/:id", func(c *gin.Context) {
 		userController.GetByID(c)
+	})
+	r.Gin.POST("/sign-up", func(c *gin.Context) {
+		userController.Create(c)
 	})
 }
 

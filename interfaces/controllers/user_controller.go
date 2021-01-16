@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"app/domain"
 	"app/interfaces/repository"
 	"app/usecase/interactor"
 	"fmt"
@@ -33,4 +34,14 @@ func (u *UserController) GetByID(c *gin.Context) {
 		return
 	}
 	c.JSON(200, user)
+}
+
+func (u *UserController) Create(c *gin.Context) {
+	var user *domain.User
+	c.Bind(&user)
+	err := u.Interactor.Create(user)
+	if err != nil {
+		c.JSON(500, err.Error())
+	}
+	c.JSON(201, "")
 }
