@@ -1,21 +1,24 @@
 package controllers
 
 import (
+	"app/usecase/interactor"
+	"app/usecase/repository"
 	"strconv"
 
-	"app/usecase/interactor"
-
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 )
 
 type userController struct {
 	interactor interactor.UserInteractor
 }
 
-func NewUserController(db *gorm.DB) *userController {
+func NewUserController(db database.DB) *userController {
 	return &userController{
-		interactor: interactor.UserInteractor{},
+		interactor: interactor.UserInteractor{
+			UserRepository: repository.UserRepository{
+				db: db,
+			},
+		},
 	}
 }
 

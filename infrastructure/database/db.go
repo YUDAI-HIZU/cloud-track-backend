@@ -8,14 +8,14 @@ import (
 )
 
 var (
-	db  *gorm.DB
+	DB  *gorm.DB
 	err error
 )
 
 func Conn() *gorm.DB {
-	db, err := gorm.Open("mysql", config.DatabaseURL)
+	DB, err = gorm.Open("mysql", config.DatabaseURL)
 	if err != nil {
 		panic(err)
 	}
-	return db
+	return DB
 }
