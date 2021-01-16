@@ -1,4 +1,4 @@
-package database
+package infrastructure
 
 import (
 	"app/config"
@@ -7,15 +7,10 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-var (
-	db  *gorm.DB
-	err error
-)
-
-func Conn() *gorm.DB {
+func NewDatabase() (*gorm.DB, error) {
 	db, err := gorm.Open("mysql", config.DatabaseURL)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return db
+	return db, nil
 }
