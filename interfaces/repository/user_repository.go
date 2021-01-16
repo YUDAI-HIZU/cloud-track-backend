@@ -24,8 +24,12 @@ func (u *UserRepository) GetByID(id int) (*domain.User, error) {
 }
 
 func (u *UserRepository) Create(user *domain.User) error {
+	err := user.SetPassword()
+	if err != nil {
+		return err
+	}
 	result := u.DB.Create(user)
-	if err := result.Error; err != nil {
+	if err = result.Error; err != nil {
 		return fmt.Errorf("failed to create user: %w", err)
 	}
 	return nil
