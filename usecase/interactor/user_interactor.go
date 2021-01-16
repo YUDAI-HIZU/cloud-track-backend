@@ -14,5 +14,5 @@ func (u *UserInteractor) GetByID(id int) (*domain.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &user, nil
+	return user, nil
 }

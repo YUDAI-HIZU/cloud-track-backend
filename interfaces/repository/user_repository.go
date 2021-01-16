@@ -2,20 +2,22 @@ package repository
 
 import (
 	"app/domain"
+	"errors"
 
 	"github.com/jinzhu/gorm"
 )
 
 type UserRepository struct {
-	db *gorm.DB
+	DB *gorm.DB
 }
 
-func (u *UserRepository) GetByID(id int) (user domain.User, err error) {
-	if err := u.db.Take(&user, id).Error; err != nil {
+func (u *UserRepository) GetByID(id int) (*domain.User, error) {
+	var user domain.User
+	if err := u.DB.Take(&user, id).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			return user, err
+			err = errors.New("not found")
 		}
-		return user, err
+		return nil, err
 	}
-	return user, nil
+	return &user, nil
 }

@@ -1,32 +1,35 @@
 package controllers
 
 import (
+	"app/interfaces/repository"
 	"app/usecase/interactor"
-	"app/usecase/repository"
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
-type userController struct {
-	interactor interactor.UserInteractor
+type UserController struct {
+	Interactor interactor.UserInteractor
 }
 
-func NewUserController(db database.DB) *userController {
-	return &userController{
-		interactor: interactor.UserInteractor{
-			UserRepository: repository.UserRepository{
-				db: db,
+func NewUserController(db *gorm.DB) *UserController {
+	return &UserController{
+		Interactor: interactor.UserInteractor{
+			UserRepository: &repository.UserRepository{
+				DB: db,
 			},
 		},
 	}
 }
 
-func (u *userController) GetByID(c *gin.Context) {
+func (u *UserController) GetByID(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
-	user, err := u.interactor.GetByID(id)
+	user, err := u.Interactor.GetByID(id)
+	fmt.Println(user, err)
 	if err != nil {
-		c.JSON(500, err)
+		c.JSON(404, err.Error())
 		return
 	}
 	c.JSON(200, user)
