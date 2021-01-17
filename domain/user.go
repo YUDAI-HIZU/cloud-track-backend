@@ -11,3 +11,8 @@ type User struct {
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 }
+
+type SignInInput struct {
+	Email    string
+	Password string
+}
