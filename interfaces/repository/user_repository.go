@@ -29,3 +29,14 @@ func (u *UserRepository) Create(user *domain.User) error {
 	}
 	return nil
 }
+
+func (u *UserRepository) GetByEmail(email string) (*domain.User, error) {
+	var user domain.User
+	if err := u.DB.Where("email = ?", email).First(&user).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			err = err
+		}
+		return nil, err
+	}
+	return &user, nil
+}

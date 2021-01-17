@@ -15,7 +15,7 @@ func genEncryptedPassword(password string) (string, error) {
 	return string(hash), nil
 }
 
-func compareHashAndPass(encryptedPassword string, password string) error {
+func compareHashAndPassWord(encryptedPassword string, password string) error {
 	if err := bcrypt.CompareHashAndPassword([]byte(encryptedPassword), []byte(password)); err != nil {
 		return err
 	}
@@ -45,4 +45,15 @@ func (u *UserInteractor) Create(user *domain.User) error {
 		return err
 	}
 	return nil
+}
+
+func (u *UserInteractor) SignIn(input *domain.SignInInput) (*domain.User, error) {
+	user, err := u.UserRepository.GetByEmail(input.Email)
+	if err != nil {
+		return nil, err
+	}
+	if err := compareHashAndPassWord(user.EncryptedPassword, input.Password); err != nil {
+		return nil, err
+	}
+	return user, nil
 }

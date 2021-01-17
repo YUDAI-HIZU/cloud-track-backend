@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"app/infrastructure/middleware"
 	"app/interfaces/controllers"
 
 	"github.com/gin-gonic/gin"
@@ -33,6 +34,10 @@ func (r *Router) setRouter() {
 	r.Gin.POST("/sign-up", func(c *gin.Context) {
 		userController.Create(c)
 	})
+	r.Gin.POST("sign-in", func(c *gin.Context) {
+		userController.SignIn(c)
+	})
+	r.Gin.GET("/auth", middleware.AuthMiddleware())
 }
 
 func (r *Router) Run() {
