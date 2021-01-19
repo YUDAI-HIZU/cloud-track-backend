@@ -1,32 +1,31 @@
 package middleware
 
 import (
-	"app/config"
+	"context"
 	"log"
 	"net/http"
+	"strings"
 
-	"github.com/dgrijalva/jwt-go"
-	"github.com/dgrijalva/jwt-go/request"
+	firebase "firebase.google.com/go"
 	"github.com/gin-gonic/gin"
 )
 
-func AuthMiddleware() gin.HandlerFunc {
+func AuthMiddleware(app *firebase.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token, err := request.ParseFromRequest(c.Request, request.OAuth2Extractor, func(token *jwt.Token) (interface{}, error) {
-			return []byte(config.JwtSecret), nil
-		})
+		ctx := context.Background()
+		auth, err := app.Auth(ctx)
 		if err != nil {
-			log.Print("failed to parse jwt token", err.Error())
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "認証に失敗しました", "error": err.Error()})
+			log.Printf("Verified ID token: %v\n", err)
 			return
 		}
-		claims, ok := token.Claims.(jwt.MapClaims)
-		if !ok {
-			log.Print("failed to get claims", err.Error())
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "認証に失敗しました", "error": err.Error()})
+		authorization := c.Request.Header.Get("Authorization")
+		idToken := strings.Replace(authorization, "Bearer ", "", 1)
+		token, err := auth.VerifyIDToken(ctx, idToken)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
 			return
 		}
-		c.Set("userID", claims["userID"].(float64))
+		log.Printf("Verified ID token: %v\n", token)
 		c.Next()
 	}
 }
