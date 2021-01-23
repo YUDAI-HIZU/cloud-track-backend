@@ -7,16 +7,10 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-var db *gorm.DB
-
-func init() {
-	var err error
-	db, err = gorm.Open("mysql", config.DatabaseURL)
+func NewDatabase() (*gorm.DB, error) {
+	db, err := gorm.Open("mysql", config.DatabaseURL)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-}
-
-func NewDatabase() *gorm.DB {
-	return db
+	return db, nil
 }
