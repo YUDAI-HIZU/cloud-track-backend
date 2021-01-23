@@ -35,6 +35,16 @@ func (u *UserController) GetByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": user})
 }
 
+func (u *UserController) CurrentUser(c *gin.Context) {
+	id := c.GetInt("userID")
+	user, err := u.Interactor.GetByID(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": user})
+}
+
 func (u *UserController) Create(c *gin.Context) {
 	var user *domain.User
 	if err := c.Bind(&user); err != nil {
@@ -55,10 +65,10 @@ func (u *UserController) SignIn(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	user, err := u.Interactor.SignIn(input)
+	user, token, err := u.Interactor.SignIn(input)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": user})
+	c.JSON(http.StatusOK, gin.H{"data": user, "token": token})
 }
