@@ -4,7 +4,6 @@ import (
 	"app/infrastructure/middleware"
 	"app/interfaces/controllers"
 
-	firebase "firebase.google.com/go"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 )
@@ -12,15 +11,13 @@ import (
 type Router struct {
 	DB   *gorm.DB
 	Gin  *gin.Engine
-	App  *firebase.App
 	Port string
 }
 
-func NewRouter(db *gorm.DB, app *firebase.App) *Router {
+func NewRouter(db *gorm.DB) *Router {
 	r := &Router{
 		DB:   db,
 		Gin:  gin.Default(),
-		App:  app,
 		Port: "3000",
 	}
 	r.Gin.Use(gin.Logger())
@@ -40,7 +37,7 @@ func (r *Router) setRouter() {
 	r.Gin.POST("sign-in", func(c *gin.Context) {
 		userController.SignIn(c)
 	})
-	r.Gin.GET("/auth", middleware.AuthMiddleware(r.App))
+	r.Gin.GET("/auth", middleware.AuthMiddleware())
 }
 
 func (r *Router) Run() {

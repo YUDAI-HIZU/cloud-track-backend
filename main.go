@@ -3,9 +3,11 @@ package main
 import "app/infrastructure"
 
 func main() {
-	db := infrastructure.NewDatabase()
+	db, err := infrastructure.NewDatabase()
+	if err != nil {
+		panic(err)
+	}
 	defer db.Close()
-	app := infrastructure.NewFirebaseApp()
-	r := infrastructure.NewRouter(db, app)
+	r := infrastructure.NewRouter(db)
 	r.Run()
 }
