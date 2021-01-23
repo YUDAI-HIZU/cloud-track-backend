@@ -1,13 +1,20 @@
 package interactor
 
 import (
+	"app/config"
 	"app/domain"
 	"app/usecase/repository"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func genEncryptedPassword(password string) (string, error) {
+type UserInteractor struct {
+	UserRepository repository.UserRepository
+}
+
+func generateEncryptedPassword(password string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
@@ -22,8 +29,14 @@ func compareHashAndPassWord(encryptedPassword string, password string) error {
 	return nil
 }
 
-type UserInteractor struct {
-	UserRepository repository.UserRepository
+func generateToken(id int) (string, error) {
+	claims := &jwt.MapClaims{
+		"exp":    time.Now().Add(24 * 7 * time.Hour).Unix(),
+		"userID": id,
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(config.JwtSecret))
+	return tokenString, err
 }
 
 func (u *UserInteractor) GetByID(id int) (*domain.User, error) {
@@ -35,7 +48,7 @@ func (u *UserInteractor) GetByID(id int) (*domain.User, error) {
 }
 
 func (u *UserInteractor) Create(user *domain.User) error {
-	encryptedPassword, err := genEncryptedPassword(user.Password)
+	encryptedPassword, err := generateEncryptedPassword(user.Password)
 	if err != nil {
 		return err
 	}
@@ -47,13 +60,14 @@ func (u *UserInteractor) Create(user *domain.User) error {
 	return nil
 }
 
-func (u *UserInteractor) SignIn(input *domain.SignInInput) (*domain.User, error) {
+func (u *UserInteractor) SignIn(input *domain.SignInInput) (*domain.User, string, error) {
 	user, err := u.UserRepository.GetByEmail(input.Email)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	if err := compareHashAndPassWord(user.EncryptedPassword, input.Password); err != nil {
-		return nil, err
+		return nil, "", err
 	}
-	return user, nil
+	token, err := generateToken(user.ID)
+	return user, token, nil
 }

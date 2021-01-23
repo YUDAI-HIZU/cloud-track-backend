@@ -26,7 +26,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "認証に失敗しました", "error": err.Error()})
 			return
 		}
-		c.Set("userID", claims["userID"].(float64))
+		c.Set("userID", int(claims["userID"].(float64)))
 		c.Next()
 	}
 }

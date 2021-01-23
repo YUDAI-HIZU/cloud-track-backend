@@ -38,6 +38,9 @@ func (r *Router) setRouter() {
 		userController.SignIn(c)
 	})
 	r.Gin.GET("/auth", middleware.AuthMiddleware())
+	r.Gin.GET("/account", middleware.AuthMiddleware(), func(c *gin.Context) {
+		userController.CurrentUser(c)
+	})
 }
 
 func (r *Router) Run() {
