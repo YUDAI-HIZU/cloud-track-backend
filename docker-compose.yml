@@ -3,7 +3,6 @@ services:
   app:
     build: 
       context: .
-      dockerfile: ./docker/api/Dockerfile
     volumes:
       - ./:/go/src/app
     env_file:
