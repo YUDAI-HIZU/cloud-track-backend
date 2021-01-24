@@ -4,13 +4,12 @@ WORKDIR /go/src/app
 
 ENV GO111MODULE=on
 
-RUN apk add --no-cache \
-        alpine-sdk \
-        git \
+RUN apk add --no-cache alpine-sdk git \
     && go get github.com/pilu/fresh \
     && go get bitbucket.org/liamstask/goose/cmd/goose
 
-COPY go.mod go.sum ./
+COPY go.mod .
+COPY go.sum .
 RUN go mod download
 COPY . .
 
