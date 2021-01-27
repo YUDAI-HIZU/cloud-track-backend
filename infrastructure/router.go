@@ -9,16 +9,14 @@ import (
 )
 
 type Router struct {
-	DB   *gorm.DB
-	Gin  *gin.Engine
-	Port string
+	DB  *gorm.DB
+	Gin *gin.Engine
 }
 
 func NewRouter(db *gorm.DB) *Router {
 	r := &Router{
-		DB:   db,
-		Gin:  gin.Default(),
-		Port: "3000",
+		DB:  db,
+		Gin: gin.Default(),
 	}
 	r.Gin.Use(gin.Logger())
 	r.Gin.Use(gin.Recovery())
@@ -61,5 +59,5 @@ func (r *Router) setRouter() {
 }
 
 func (r *Router) Run() {
-	r.Gin.Run(":" + r.Port)
+	r.Gin.Run()
 }
